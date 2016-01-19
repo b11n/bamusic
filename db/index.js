@@ -16,16 +16,17 @@ var Users = mongoose.model('Users', {
 var Collections = mongoose.model('Collections',{
 		userid:String,
 		songid:String,
-		name:String
+		name:String,
+		thumb:String
 
 });
 
 
 
-function addToCollection(songid,userid,name,cb){
+function addToCollection(songid,userid,name,thumb,cb){
 
 
-var kitty = new Collections({ userid: userid,songid:songid,name:name });
+var kitty = new Collections({ userid: userid,songid:songid,name:name,thumb:thumb });
 kitty.save(function (err,data) {
   if (err){
   	cb(err,null);

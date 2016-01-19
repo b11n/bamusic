@@ -50,6 +50,7 @@ router.delete("/collection/:id",function(req,res){
 router.post("/collection/",function(req,res){
   var songid = req.body.videoid+"";
   var songname = req.body.name+"";
+  var thumb = req.body.thumb+"";
   var userid = req.session.user.id+"";
   searchFileSystem(songid,function(status){
   	if(status){
@@ -62,9 +63,17 @@ router.post("/collection/",function(req,res){
   	}
 
   })
-  db.addToCollection(songid,userid,songname,function(err,data){
+  db.addToCollection(songid,userid,songname,thumb,function(err,data){
+  		console.log(data)
   		if(!err){
-  			res.send(data);
+  			temp ={
+  				name:data.name,
+  				id:data.songid,
+  				userid:data.userid,
+  				thumb:data.thumb,
+  				uri: "http://"+req.get('host')+"/download/"+data.songid+".mp3"
+  			}
+  			res.send(temp);
   		}else{
   			res.send(err);
   		}
@@ -92,6 +101,7 @@ router.get("/getUserCollection/:id",function(req,res){
 				var temp = {};
 				temp.id= data[i].songid;
 				temp.name =  data[i].name;
+				temp.thumb =  data[i].thumb;
 				temp.uri = "http://"+req.get('host')+"/download/"+data[i].songid+".mp3";
 				result.push(temp)
 			};

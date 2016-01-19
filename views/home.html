@@ -3,6 +3,55 @@
 <head>
 	<title>Home</title>
 </head>
+
+<style type="text/css">
+
+.cont{
+  overflow:hidden;
+  margin-bottom: 10px
+}
+
+.fl{
+  float:left;
+}
+
+.details{
+  width:300px;
+}
+
+.exists{
+	color: grey;
+	cursor: default !important;
+}
+
+.play{
+	cursor: pointer;
+}
+
+.title{
+  color:#1D7AC6;
+  font-weight:bold;
+  font-size:18px;
+  white-space: nowrap; 
+    width: 12em; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.desc{
+     font-size: 13px;
+    color: grey;
+    height: 35px;
+    overflow: hidden;
+}
+
+
+.add{
+  cursor:pointer;
+}
+
+
+</style>
 <body>
 <input><button>Search</button>
 
@@ -11,18 +60,41 @@
 
 </div>
 
-<div>
+<div class="" style="
+    position: absolute;
+    right: 0;
+    top: 0;
+">
 <div>Your collection</div>
-<ul id="myCollection">
-
-</ul>
+<div id="lib"></div>
 </div>
+
+
+<div id="player"></div>
 </body>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.2.3/backbone-min.js"></script>
-<script type="text/javascript">
+
+<script src="https://fb.me/react-0.14.6.js"></script>
+<script src="https://fb.me/react-dom-0.14.6.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+
+
+
+<script type="text/babel">
+
+
+
+var UserSong = Backbone.Model.extend({
+	urlRoot:"/api/collection"
+})
+
+var UserSongCollection = Backbone.Collection.extend({
+	url:'api/getUserCollection/auth',
+	model:UserSong
+});
 
 
 $("button").on("click",function(){
@@ -36,119 +108,216 @@ function searchStr(q){
 		success:function(d){
 			$("#results").html("");
 			d = JSON.parse(d);
-			for (var i = 0; i < d.items.length; i++) {
-				$("#results").append(addVideoToDOM(d.items[i]));
-			};
+			
+				//$("#results").append(addVideoToDOM(d.items[i]));
+				ReactDOM.render(
+  					<SearchResult results={d.items}/>,document.getElementById('results')
+					);
+
+			
 		}
 	})
 }
 
 
-function addVideoToDOM(video){
-	var li = $("<li>");
-	var img = $("<img>");
-	var name = $("<span>").addClass("name");
-	var add = $("<span>").addClass("add");
-	add.html(" add to my collectionS")
-	li.id = video.id.videoId;
-	name.html(video.snippet.title)
-	var foundModels = userSongCollection.where({id:video.id.videoId});
-	if(foundModels.length == 0){
-
-		bindDownloadListener(add,video.snippet.title,video.id.videoId)
-	}else{
-		add.html(" already in your colelction")
-	}
 
 
-	li.append(img).append(name).append(add);
-	
-	return li;
 
-
-}
-
-
-function bindDownloadListener(dom,songname,id){
-	$(dom).on("click",function(e){
-			var songModel = new UserSong({name:songname,videoid:id});
-			songModel.save({name:songname,videoid:id},{success:function(){
-				$(dom).html("added to your collection");
-				userSongCollection.add(songModel);
-			}});
-	});
-}
 
 
 /*Backbone code starts*/
 
-var UserSong = Backbone.Model.extend({
-	urlRoot:"/api/collection"
-})
 
-var UserSongCollection = Backbone.Collection.extend({
-	url:'api/getUserCollection/auth',
-	model:UserSong
-});
 
-var UserSongItemView = Backbone.View.extend({
-	initialize:function(options){
-		this.model = options.model;
 
-		 this.render();
-		 console.log(this.el)
-		 this.delegateEvents();
 
-	},events:{
-		'click .delete':'removeThis'
-	},
-	removeThis:function(){
-		this.model.destroy();
-		this.remove();
+
+
+
+var SearchResult =React.createClass({
+	componentDidMount:function(){
+		var _this = this;
+		userSongCollection.on('add',function(a,b){
+			_this.render();
+		})
+
+		userSongCollection.on('remove',function(a,b){
+			_this.render();
+		})
+
 	},
 	render:function(){
-		var li = $("<li>");
-		li.html(this.model.get("name"));
-		var del = $("<span class='delete'>");
-		del.html("[X]")
-		li.append(del);
-		this.$el.append( li);
-		return this.el;
-	}
-})
-
-
-var UserSongsView = Backbone.View.extend({
-	initialize:function(options){
-		this.collection = options.collection;
-		this.listenTo(this.collection,'add',this.addItem);
 		
-	},
-	addItem:function(item){
-		var x = new UserSongItemView({model:item})
-
-		$("#myCollection").append(x.el);
+		return  <ul>
+        			{this.props.results.map(function(result) {
+        				
+        				var foundModels = userSongCollection.where({id:result.id.videoId});
+        				var inLib = false;
+						if(foundModels.length == 0){
+							inLib= false;
+						}else{
+							inLib= true;
+						}
+						console.log(inLib)
+           				return <SearchResultItem inLib={inLib} key={result.id.videoId} model={result} />;
+        			})}
+      			</ul>
 	}
 })
+
+var SearchResultItem = React.createClass({
+  getInitialState:function(){
+
+  	return {inLib:this.props.inLib};
+  },
+  addToMyCollection:function(){
+  			if(this.state.inLib){
+  				return;
+  			}
+  			var _this = this;
+  	
+  			var songModel = new UserSong();
+			songModel.save({name:this.props.model.snippet.title,
+				videoid:this.props.model.id.videoId,
+				thumb:this.props.model.snippet.thumbnails.default.url
+			},{success:function(){
+				console.log("added")
+				userSongCollection.add(songModel);
+				_this.setState({inLib: true})
+			}});
+  },
+  render: function() {
+
+
+  	var collectionText = this.state.inLib? 'In your collection':'[+] Add to my collection';
+  	var exists = this.state.inLib?"add exists":"add";
+    return <div className="cont">
+			  <div className="fl">
+			    <img src={this.props.model.snippet.thumbnails.default.url} alt=""/>
+			  </div>
+			  <span className="fl details">
+			    <div className="title">{this.props.model.snippet.title}</div>
+			    <div className="channel">{this.props.model.snippet.channelTitle}</div>
+			    <div className="desc">{this.props.model.snippet.description}</div>
+			    <div className={exists} onClick={this.addToMyCollection} >{collectionText}</div>
+			  </span>
+			</div>
+
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 var userSongCollection = new UserSongCollection();
 
-var userSongsView = new UserSongsView({collection:userSongCollection});
+var MyLibrary = React.createClass({
+	getInitialState:function(){
+		return {"collection":{"models":[]}};
+	},
+	componentDidMount :function(){
+
+		
+		var _this = this;
+		userSongCollection.fetch({success:function(d){
+			_this.setState({collection:userSongCollection});
+		}});
+
+		userSongCollection.on('add',function(a,b){
+			_this.setState({collection:userSongCollection});
+		})
+
+		userSongCollection.on('remove',function(a,b){
+			_this.setState({collection:userSongCollection});
+		})
+
+	},
+	render:function(){
+		return  <ul>
+					{this.state.collection.models.map(function(result) {
+           				return <LibraryItem key={result.get("id")} model={result} />;
+        			})}
+      			</ul>
+	}
+});
 
 
-userSongCollection.fetch({success:function(d){
-	console.log(d)
-}});
+
+var LibraryItem = React.createClass({
+  getInitialState:function(){
+  	return null;
+  },
+  removeFromMyCollection:function(){
+  			this.props.model.destroy();
+  },
+  playThis:function(){
+  	$(window).trigger("play",this.props.model)
+  },
+  render: function() {
+  	var collectionText = '[-] Remove from collection';
+  	var exists = "add"
+    return <div className="cont">
+			  <div className="fl">
+			    <img src={this.props.model.get("thumb")} alt=""/>
+			  </div>
+			  <span className="fl details">
+			    <div className="title">{this.props.model.get("name")}</div>
+			    <div className="channel">My lib</div>
+			    <div className="play" onClick={this.playThis}>Play</div>
+			    <div className={exists} onClick={this.removeFromMyCollection} >{collectionText}</div>
+			  </span>
+			</div>
+
+  }
+});
+
+var Player = React.createClass({
+	getInitialState:function(){
+		return {src:""};
+	},
+	play:function(){
+		setTimeout(function(){
+			$("audio")[0].play();
+		},100);
+	},
+	pause:function(){
+		$("audio")[0].pause();
+	},
+	componentDidMount:function(){
+		var _this = this;
+		$(window).on("play",function(e,d){
+			_this.setState({src:d.get("uri")})
+			_this.play();
+		});
+		
+	},
+	render:function(){
+		return <div>
+					<audio controls src={this.state.src} type="audio/mp3" ></audio>
+				</div>
+	}
+})
 
 
 
+$(document).ready(function(){
+					ReactDOM.render(
+  					<MyLibrary />,document.getElementById('lib')
+					);
 
-
-
-
-
-
-/*Backbone end*/
+					ReactDOM.render(
+  					<Player />,document.getElementById('player')
+					);
+})
 
 </script>
 </html>
