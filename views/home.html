@@ -1,0 +1,154 @@
+
+<html>
+<head>
+	<title>Home</title>
+</head>
+<body>
+<input><button>Search</button>
+
+<div id="results">
+
+
+</div>
+
+<div>
+<div>Your collection</div>
+<ul id="myCollection">
+
+</ul>
+</div>
+</body>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.2.3/backbone-min.js"></script>
+<script type="text/javascript">
+
+
+$("button").on("click",function(){
+	searchStr($("input").val())
+})
+
+
+function searchStr(q){
+	$.ajax({
+		url:"/api/search?q="+q,
+		success:function(d){
+			$("#results").html("");
+			d = JSON.parse(d);
+			for (var i = 0; i < d.items.length; i++) {
+				$("#results").append(addVideoToDOM(d.items[i]));
+			};
+		}
+	})
+}
+
+
+function addVideoToDOM(video){
+	var li = $("<li>");
+	var img = $("<img>");
+	var name = $("<span>").addClass("name");
+	var add = $("<span>").addClass("add");
+	add.html(" add to my collectionS")
+	li.id = video.id.videoId;
+	name.html(video.snippet.title)
+	var foundModels = userSongCollection.where({id:video.id.videoId});
+	if(foundModels.length == 0){
+
+		bindDownloadListener(add,video.snippet.title,video.id.videoId)
+	}else{
+		add.html(" already in your colelction")
+	}
+
+
+	li.append(img).append(name).append(add);
+	
+	return li;
+
+
+}
+
+
+function bindDownloadListener(dom,songname,id){
+	$(dom).on("click",function(e){
+			var songModel = new UserSong({name:songname,videoid:id});
+			songModel.save({name:songname,videoid:id},{success:function(){
+				$(dom).html("added to your collection");
+				userSongCollection.add(songModel);
+			}});
+	});
+}
+
+
+/*Backbone code starts*/
+
+var UserSong = Backbone.Model.extend({
+	urlRoot:"/api/collection"
+})
+
+var UserSongCollection = Backbone.Collection.extend({
+	url:'api/getUserCollection/auth',
+	model:UserSong
+});
+
+var UserSongItemView = Backbone.View.extend({
+	initialize:function(options){
+		this.model = options.model;
+
+		 this.render();
+		 console.log(this.el)
+		 this.delegateEvents();
+
+	},events:{
+		'click .delete':'removeThis'
+	},
+	removeThis:function(){
+		this.model.destroy();
+		this.remove();
+	},
+	render:function(){
+		var li = $("<li>");
+		li.html(this.model.get("name"));
+		var del = $("<span class='delete'>");
+		del.html("[X]")
+		li.append(del);
+		this.$el.append( li);
+		return this.el;
+	}
+})
+
+
+var UserSongsView = Backbone.View.extend({
+	initialize:function(options){
+		this.collection = options.collection;
+		this.listenTo(this.collection,'add',this.addItem);
+		
+	},
+	addItem:function(item){
+		var x = new UserSongItemView({model:item})
+
+		$("#myCollection").append(x.el);
+	}
+})
+
+var userSongCollection = new UserSongCollection();
+
+var userSongsView = new UserSongsView({collection:userSongCollection});
+
+
+userSongCollection.fetch({success:function(d){
+	console.log(d)
+}});
+
+
+
+
+
+
+
+
+
+/*Backbone end*/
+
+</script>
+</html>
