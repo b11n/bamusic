@@ -21,6 +21,7 @@ app.set('view engine', 'html');
 
 
 app.get("/",function(req,res){
+  console.log(req)
 	if(!req.session.user){
 		res.redirect("/login");
 	}else{
@@ -34,6 +35,8 @@ app.use('/api', api());
 
 
 app.get("/download/:id",function(req,res){
+
+   res.set("Content-Type","application/octet-stream");
 
   searchFileSystem(req.params.id,function(files){
     for (var i = 0; i < files.length; i++) {

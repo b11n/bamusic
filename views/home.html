@@ -2,13 +2,20 @@
 <html>
 <head>
 	<title>Home</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.nanoscroller/0.8.7/css/nanoscroller.min.css">
 
 <style type="text/css">
-
+*{
+	font-family: sans-serif;
+}
 .cont{
   overflow:hidden;
-  margin-bottom: 10px
+  margin-bottom: 10px;
+  width: 100%;
+
 }
 
 .fl{
@@ -16,7 +23,7 @@
 }
 
 .details{
-  width:300px;
+  width:68%
 }
 
 .exists{
@@ -26,16 +33,22 @@
 
 .play{
 	cursor: pointer;
+	font-size: 2em;
 }
 
 .title{
   color:#1D7AC6;
   font-weight:bold;
-  font-size:18px;
+  font-size:1em;
   white-space: nowrap; 
-    width: 12em; 
+    width: 15em; 
     overflow: hidden;
     text-overflow: ellipsis; 
+}
+
+.download{
+	float: right;
+	font-size: 2em;
 }
 
 .desc{
@@ -45,28 +58,120 @@
     overflow: hidden;
 }
 
+.thumb{
+	width: 30%;
+}
+
+.thumb img{
+	width:100%;
+}
+
 
 .add{
   cursor:pointer;
 }
 
+.nowPlaying{
 
+    width: 100%;
+    height: 120px;
+    position: fixed;
+    bottom: 0;
+
+}
+
+.nowPlaying .nowPlayingName{
+
+    display: block;
+    text-align: center;
+    font-size: 23px;
+
+}
+
+.nowPlaying{
+	width: 100%;
+	background: white;
+}
+
+.lib-list{
+	overflow-y:scroll;
+	height: 500px;
+	padding: 0px;
+}
+
+.controls{
+	float: left;
+	width: 20%;
+	height: 100%;
+	text-align: center;
+}
+
+.playPause{
+	font-size: 60px;
+    margin: 26px;
+}
+
+.prevButton,.nextButton{
+	vertical-align: top;
+	margin-top: 50px;
+}
+.wavePlayer{
+	float: left;
+	width: 70%
+}
+
+@media only screen and (max-device-width: 320px) {
+.prevButton,.nextButton{
+	display: none;
+}
+
+.playPause{
+font-size: 70px;
+    margin: 7px;
+    margin-top: 32px;
+}
+
+.mylibContainer{
+	    position: relative;
+}
+
+}
+
+.mylibContainer{
+	    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+@media only screen and (max-device-width: 480px) {
+.prevButton,.nextButton{
+	display: none;
+}
+
+.playPause{
+font-size: 70px;
+    margin: 7px;
+    margin-top: 32px;
+}
+.mylibContainer{
+	    position: relative;
+}
+}
 </style>
 <body>
-<input><button>Search</button>
 
+<div id="searchBox">  </div>
 <div id="results">
+</div>
+
+<div class="mylibContainer" style="
+
+">
+
+<div id="lib">
 
 
 </div>
-
-<div class="" style="
-    position: absolute;
-    right: 0;
-    top: 0;
-">
-<div>Your collection</div>
-<div id="lib"></div>
 </div>
 
 
@@ -81,6 +186,8 @@
 <script src="https://fb.me/react-dom-0.14.6.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
 
+<script type="text/javascript" src="http://wavesurfer-js.org/dist/wavesurfer.min.js"></script>
+
 
 
 <script type="text/babel">
@@ -93,27 +200,46 @@ var UserSong = Backbone.Model.extend({
 
 var UserSongCollection = Backbone.Collection.extend({
 	url:'api/getUserCollection/auth',
-	model:UserSong
+	model:UserSong,
+	initialize:function(){
+	}
+});
+
+var i = 0;
+
+var SearchResultItem = Backbone.Model.extend({
+	idAttribute:"etag",
+	checkInMyCollection:function(){
+		var foundModels = userSongCollection.where({id:this.get("id").videoId});
+		var inLib = false;
+		if(foundModels.length == 0){
+			this.set("inLib", false);
+		}else{
+			this.set("inLib", true);
+			
+		}
+	},
+	initialize:function(){
+		this.checkInMyCollection();
+		
+		this.listenTo(userSongCollection,'remove',this.checkInMyCollection);
+		this.listenTo(userSongCollection,'add',this.checkInMyCollection);
+	}
+});
+var SearchResultCollection = Backbone.Collection.extend({
+	model:SearchResultItem
 });
 
 
-$("button").on("click",function(){
-	searchStr($("input").val())
-})
 
 
-function searchStr(q){
+
+function searchStr(q,cb){
 	$.ajax({
 		url:"/api/search?q="+q,
 		success:function(d){
-			$("#results").html("");
 			d = JSON.parse(d);
-			
-				//$("#results").append(addVideoToDOM(d.items[i]));
-				ReactDOM.render(
-  					<SearchResult results={d.items}/>,document.getElementById('results')
-					);
-
+			cb(d.items);
 			
 		}
 	})
@@ -128,6 +254,34 @@ function searchStr(q){
 /*Backbone code starts*/
 
 
+
+var SearchBar = React.createClass({
+	getInitialState:function(){
+		return {result:new SearchResultCollection() };
+	},
+	componentDidMount:function(){
+
+		this.refs.searchButton.addEventListener("click",function(){
+			var searchQ = this.refs.input.value;
+			searchStr(searchQ,function(d){
+				var temp = this.state.result
+				temp.set(d);
+				this.setState({result:temp});
+				
+				
+			}.bind(this))
+			
+		}.bind(this))
+	},
+	render:function(){
+		return <div>
+					<input ref="input"></input>
+					<button ref="searchButton">Search</button>
+					<SearchResult results={this.state.result}/>
+				</div>
+	}
+
+});
 
 
 
@@ -148,20 +302,16 @@ var SearchResult =React.createClass({
 	},
 	render:function(){
 		
-		return  <ul>
-        			{this.props.results.map(function(result) {
+		return  <div>
+				
+				<ul>
+        			{this.props.results.models.map(function(result) {
         				
-        				var foundModels = userSongCollection.where({id:result.id.videoId});
-        				var inLib = false;
-						if(foundModels.length == 0){
-							inLib= false;
-						}else{
-							inLib= true;
-						}
-						console.log(inLib)
-           				return <SearchResultItem inLib={inLib} key={result.id.videoId} model={result} />;
+
+           				return <SearchResultItem inLib={result.get("inLib")} key={result.get("id").videoId} model={result} />;
         			})}
       			</ul>
+      			</div>
 	}
 })
 
@@ -170,20 +320,29 @@ var SearchResultItem = React.createClass({
 
   	return {inLib:this.props.inLib};
   },
+  componentDidMount:function(){
+  		this.props.model.listenTo(this.props.model,"change",function(e){
+  			console.log(e)
+  			this.setState({inLib:this.props.model.get("inLib")})
+  		}.bind(this))
+  },
+  componentWillUnmount:function(){
+  	console.log("Unmounting")
+  },
   addToMyCollection:function(){
   			if(this.state.inLib){
   				return;
   			}
   			var _this = this;
+  			console.log(this)
   	
   			var songModel = new UserSong();
-			songModel.save({name:this.props.model.snippet.title,
-				videoid:this.props.model.id.videoId,
-				thumb:this.props.model.snippet.thumbnails.default.url
-			},{success:function(){
-				console.log("added")
+			songModel.save({name:this.props.model.get("snippet").title,
+				videoid:this.props.model.get("id").videoId,
+				thumb:this.props.model.get("snippet").thumbnails.default.url
+			},{success:function(d){
+				console.log(d)
 				userSongCollection.add(songModel);
-				_this.setState({inLib: true})
 			}});
   },
   render: function() {
@@ -193,12 +352,12 @@ var SearchResultItem = React.createClass({
   	var exists = this.state.inLib?"add exists":"add";
     return <div className="cont">
 			  <div className="fl">
-			    <img src={this.props.model.snippet.thumbnails.default.url} alt=""/>
+			    <img src={this.props.model.get("snippet").thumbnails.default.url} alt=""/>
 			  </div>
 			  <span className="fl details">
-			    <div className="title">{this.props.model.snippet.title}</div>
-			    <div className="channel">{this.props.model.snippet.channelTitle}</div>
-			    <div className="desc">{this.props.model.snippet.description}</div>
+			    <div className="title">{this.props.model.get("snippet").title}</div>
+			    <div className="channel">{this.props.model.get("snippet").channelTitle}</div>
+			    <div className="desc">{this.props.model.get("snippet").description}</div>
 			    <div className={exists} onClick={this.addToMyCollection} >{collectionText}</div>
 			  </span>
 			</div>
@@ -240,13 +399,21 @@ var MyLibrary = React.createClass({
 			_this.setState({collection:userSongCollection});
 		})
 
+		$(window).on("endPlay",function(e,d){
+			
+		});
+
+
 	},
 	render:function(){
-		return  <ul>
+		return  <div>
+				<span>My Collection [{this.state.collection.models.length}]</span>
+				<ul className="lib-list">
 					{this.state.collection.models.map(function(result) {
            				return <LibraryItem key={result.get("id")} model={result} />;
         			})}
       			</ul>
+      			</div>
 	}
 });
 
@@ -266,13 +433,14 @@ var LibraryItem = React.createClass({
   	var collectionText = '[-] Remove from collection';
   	var exists = "add"
     return <div className="cont">
-			  <div className="fl">
+			  <div className="fl thumb">
 			    <img src={this.props.model.get("thumb")} alt=""/>
 			  </div>
 			  <span className="fl details">
 			    <div className="title">{this.props.model.get("name")}</div>
-			    <div className="channel">My lib</div>
-			    <div className="play" onClick={this.playThis}>Play</div>
+		
+			    <i className="fa fa-play-circle play" onClick={this.playThis}></i>
+			    <a href={this.props.model.get("uri")} download={this.props.model.get("name")}><i className="fa fa-download download"></i></a>
 			    <div className={exists} onClick={this.removeFromMyCollection} >{collectionText}</div>
 			  </span>
 			</div>
@@ -282,7 +450,7 @@ var LibraryItem = React.createClass({
 
 var Player = React.createClass({
 	getInitialState:function(){
-		return {src:""};
+		return {name:"",src:"",playing:false};
 	},
 	play:function(){
 		setTimeout(function(){
@@ -292,17 +460,60 @@ var Player = React.createClass({
 	pause:function(){
 		$("audio")[0].pause();
 	},
+	startPlay:function(event){
+		$(window).trigger("endPlay",this.state)
+	},
 	componentDidMount:function(){
+		
 		var _this = this;
 		$(window).on("play",function(e,d){
+			_this.setState({name:d.get("name")})
 			_this.setState({src:d.get("uri")})
-			_this.play();
+			_this.setState({origsrc:d.get("uri")})
+			//_this.play();
+			_this.wavesurfer.load(d.get("uri"));
 		});
+
+		this.wavesurfer = WaveSurfer.create({
+    		container: '.wavePlayer',
+    		waveColor: 'violet',
+    		progressColor: 'purple',
+    		fillParent:true
+		});
+
+		this.wavesurfer.on('ready', function () {
+    		_this.wavesurfer.play();
+    		_this.setState({playing:true});
+		});
+
+		this.wavesurfer.on('finish', function (e) {
+    		_this.setState({playing:false});
+		});
+
+
+
+
 		
 	},
+	playPauseClick:function(e){
+		if(this.state.src != ""){
+			this.wavesurfer.playPause();
+		}
+		this.setState({playing:!this.state.playing});
+
+
+
+	},
 	render:function(){
-		return <div>
-					<audio controls src={this.state.src} type="audio/mp3" ></audio>
+		var buttonToShow = this.state.playing?"pause":"play";
+		var buttonClassName = "playPause fa fa-"+buttonToShow+"-circle";
+		return <div className="nowPlaying">
+					<div className="controls">
+						<i className=" prevButton fa fa-fast-backward"></i>
+						<i className={buttonClassName} onClick={this.playPauseClick}></i>
+						<i className="nextButton fa fa-fast-forward"></i>
+					</div>
+					<div className="wavePlayer"></div>
 				</div>
 	}
 })
@@ -310,6 +521,12 @@ var Player = React.createClass({
 
 
 $(document).ready(function(){
+
+					ReactDOM.render(
+  					<SearchBar />,document.getElementById('searchBox')
+					);
+
+
 					ReactDOM.render(
   					<MyLibrary />,document.getElementById('lib')
 					);
@@ -317,6 +534,8 @@ $(document).ready(function(){
 					ReactDOM.render(
   					<Player />,document.getElementById('player')
 					);
+
+					
 })
 
 </script>
