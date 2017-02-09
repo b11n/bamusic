@@ -121,8 +121,22 @@ class Home extends React.Component {
 			currentTrack:data
 		});*/
 		//console.log(data)
+
+		setMeta(data)
 		this.state.playerStore.dispatch({ type: 'PLAY', uri:data.uri,id:data.id })
 	}
+
+	setMeta(data){
+		if ('mediaSession' in navigator) {
+
+		  navigator.mediaSession.metadata = new MediaMetadata({
+		    title: data.name,
+		    artwork: [
+		      { src: data.thumb, sizes: '512x512', type: 'image/jpg' },
+		    ]
+		  });
+		}
+		}
 
 	deleteTrack(id,b){
 		var a = {id:id}
