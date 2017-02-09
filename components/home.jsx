@@ -122,7 +122,7 @@ class Home extends React.Component {
 		});*/
 		//console.log(data)
 
-		setMeta(data)
+		this.setMeta(data)
 		this.state.playerStore.dispatch({ type: 'PLAY', uri:data.uri,id:data.id })
 	}
 
