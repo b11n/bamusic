@@ -1,0 +1,216 @@
+<html>
+<head>
+	<title>BaMusic</title>
+	 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	 <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed" rel="stylesheet">
+	 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/home.css">
+	<link rel="stylesheet" type="text/css" href="/css/track.css">
+	<link type="application/opensearchdescription+xml" rel="search" href="/osdd.xml"/>
+	<link rel="manifest" href="/manifest.json">
+    
+
+</head>
+<body  class="dragdealer" id="player-cont">
+
+
+<div class="search-overlay">
+
+		<div class="input-box">
+			<div class="search-icon fl">
+				<i class="fa fa-search search-icon-el" aria-hidden="true"></i>
+			</div>
+			<div class="fl input-container">
+				<input class="input-el" placeholder="Search for Songs">
+			</div>
+			<div class="fr clear-btn">
+				<i class="fa fa-times clear-btn-el" aria-hidden="true"></i>
+			</div>
+		</div>
+
+		<div class="search-results">
+
+		</div>
+		</div>
+
+</div>
+	<div class="header">
+
+		<div class="tabs">
+			<div class="tab" data-index="0" >SONGS</div>
+			<div class="tab" data-index="1" >SEARCH</div>
+			<div class="tab" data-index="2" >TRENDS</div>
+			<div class="tabSelect"></div>
+		</div>
+	</div>
+	
+	<div class="body dragdealer" id="b"> 
+
+	<div class="bodyelWrap handle">
+		
+		<div class="bodyel" id="myCollection">
+
+		</div>
+		<div class="bodyel">
+		<div class="input-box">
+			<div class="search-icon fl">
+				<i class="fa fa-search search-icon-el" aria-hidden="true"></i>
+			</div>
+			<div class="fl input-container">
+				<input class="input-el" placeholder="Search for Songs">
+			</div>
+			<div class="fr clear-btn">
+				<i class="fa fa-times clear-btn-el" aria-hidden="true"></i>
+			</div>
+		</div>
+		</div>
+		<div class="bodyel">
+			<div class="card"></div>
+			<div class="card"></div>
+		</div>
+	</div>
+			
+
+	</div>
+
+	<div class="context-menu">
+		<div class="menu-item">Share</div>
+		<div class="menu-item">Download</div>
+		<div class="menu-item">Remove</div>
+		
+	</div>
+	<div class="ripple">
+
+	<div class="maincard">
+		<div class="backdrop"></div>
+		<div class="visualizer"></div>
+
+		<div id="frontdrop">
+		<div class="header-icon-container">
+			<i class="fa fa-chevron-down header-icon" id="minimize" aria-hidden="true"></i>
+			<i class="fa fa-heart-o header-icon" id="collection" aria-hidden="true" ></i>
+
+		</div>
+		<div class="title-block">
+			<div class="oh">
+				<div class="thumb fl">
+					
+				</div>
+				<div class="title-holder fl">
+
+					<div id="channel">Artist </div>
+					<div id="title">Song Name </div>
+
+				</div>
+			</div>
+			
+		</div>
+		<div class="seek">
+			<audio id="hiddenPlayer" controls  type="audio/mpeg"></audio>
+			<!-- <div id="seeker"></div> -->
+		</div>
+
+
+<div class="half full">
+    <div class="bar"></div>
+</div>
+
+
+
+		
+		</div>
+	</div>
+
+	<!-- End of main card -->
+
+<div id="relatedTrackTitle">Related Tracks</div>
+	<div class="related">
+
+
+
+
+	</div>
+	</div>
+
+
+
+
+
+	<div class="player handle">
+
+		<div class="top-seek ">
+			<div class="loaded"></div>
+			<div id="a" class="seek-holder dragdealer"><div class="seek-button handle"></div></div>
+			
+		</div>
+<span class="player-group">
+		<div class="player-thumb fl"></div>
+		<div class="player-title fl"> 
+			<div class="channel">Artist - Some Random Song</div>
+			<div class="title" ></div>
+<div class="seek">
+	
+		</div>
+
+		</div>
+	</span>
+
+		<div class="play-pause">
+			<i class="fa fa-play" id="playpause" aria-hidden="true"></i>
+		</div>
+		
+		<audio ></audio>
+	</div>
+
+
+	<script type="text/template" id="cardTemplate">
+
+				<div class="card">
+					<div class="thumb fl"></div>
+					<div class="title-holder fl">
+						<div class="channel">Artist</div>
+						<div class="title">Katy Perry </div>
+					</div>
+					<i class="fa fa-ellipsis-v context-menu-button" aria-hidden="true"></i>
+				</div>
+
+	</script>
+
+		<script type="text/template" id="relatedCardItem">
+	<li>
+	
+
+		<div class="maincard relatedcard">
+		<div class="backdrop"></div>
+
+		<div id="frontdrop">
+
+		<div class="title-block">
+			<div class="oh">
+				<div class="thumb fl">
+					
+				</div>
+				<div class="title-holder fl">
+
+					<div id="channel">Artist </div>
+					<div id="title">Song Name </div>
+
+				</div>
+			</div>
+			
+		</div>
+
+		
+		</div>
+	</div>
+	
+	</li>
+	</script>
+
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dragdealer/0.9.8/dragdealer.min.js"></script>
+	<script type="text/javascript" src="/js/home.js"></script>
+	<script type="text/javascript" src="/js/push.js"></script>
+</body>
+</html>

@@ -22,6 +22,100 @@ var Collections = mongoose.model('Collections',{
 });
 
 
+var PushInbox = mongoose.model('PushInbox',{
+		body:String,
+		title:String,
+		icon:String,
+});
+
+var PushClients = mongoose.model('PushClients',{
+		clienttoken:String
+});
+
+
+var Share  = mongoose.model("Share",{
+	fromuserid:String,
+	touserid:String,
+	songid:String,
+	thumb:String,
+	songname:String
+});
+
+
+var Playlist  = mongoose.model("Playlist",{
+	songid:String,
+	songname:String,
+	thumb:String,
+	playlist_id:String,
+	added_by:String
+})
+
+function addToPlayist(item,cb){
+	var playlistItem = new Playlist(item);
+	playlistItem.save(function(err,data){
+		cb(null,data)
+	});
+}
+
+function addToShare(inData,cb){
+
+
+var shareItem = new Share(inData);
+shareItem.save(function (err,data) {
+  if (err){
+  	cb(err,null);
+  }else{
+  	cb(null,data);
+  }
+ 
+});
+
+}
+
+
+function getUserShare(userid,cb){
+	Share.find({touserid:userid},function(err,data){
+		  if (err){
+  			cb(err,null);
+  		}else{
+  			cb(null,data);
+  		}
+	})
+}
+
+function getLastestPush(cb){
+	PushInbox.find({}, function(err, post) {
+
+	   cb(null,post[post.length-1]);
+	});
+}
+
+function insertPush(data,cb){
+var kitty = new PushInbox(data);
+kitty.save(function (err,data) {
+  if (err){
+  	cb(err,null);
+  }else{
+  	cb(null,data);
+  }
+ 
+});
+}
+
+function addToClientIdList(clientid,cb){
+
+
+var kitty = new PushClients({ clienttoken : clientid });
+kitty.save(function (err,data) {
+  if (err){
+  	cb(err,null);
+  }else{
+  	cb(null,data);
+  }
+ 
+});
+
+}
 
 function addToCollection(songid,userid,name,thumb,cb){
 
@@ -61,5 +155,12 @@ function removeFromUserCollection(userid,songid,cb){
 module.exports = {
 	addToCollection:addToCollection,
 	getUserCollection:getUserCollection,
-	removeFromUserCollection:removeFromUserCollection
+	removeFromUserCollection:removeFromUserCollection,
+	addToShare:addToShare,
+	getUserShare:getUserShare,
+	addToPlayist:addToPlayist,
+	addToClientIdList:addToClientIdList,
+	insertPush:insertPush,
+	getLastestPush:getLastestPush
+
 };

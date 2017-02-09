@@ -1,0 +1,367 @@
+	html,body{
+		margin:0;
+		background:#EFEFEF;
+		width: 100%;
+		height: 100%;
+		font-family: 'Roboto Condensed', sans-serif;
+        overflow: hidden;
+
+	}
+		.header{
+			background: #206353;
+			    padding-top: 10px;
+    		
+		}
+
+		.header{
+
+		}
+
+
+		.body{
+			margin-top: 15px;
+			    overflow: hidden;
+		}
+		.card{
+			height: 66px;
+    padding: 0px;
+    margin-bottom: .4em;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1), 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+        background: white;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+		}
+
+		.tabs{
+			overflow: hidden;
+			margin-top: 15px;
+		}
+
+		.tab{
+			width:33%;
+			float: left;
+			height: 30px;
+			text-align: center;
+			color: white;
+
+		}
+		.tabSelect{
+    width: 33.3%;
+    height: 5px;
+    background-color: #FFF35F;
+    position: relative;
+    top: 25px;
+    left: 0;
+     -webkit-transition:all .1s ease-in;
+		}
+
+		.input-box{
+
+		    height: 50px;
+    width: 95%;
+    background: white;
+    margin: 5px;
+    margin: 0 auto;
+    border-radius: 3px;
+     -webkit-transition:all 0.1s linear;
+}
+
+.input-box.expand{
+    width: 100%;
+    border-radius: 0;
+    z-index: 5;
+    position: absolute;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1), 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+    -webkit-transition: all 0.1s linear;
+    top: 10px;
+    left: 0;
+}
+
+.search-icon{
+	    font-size: 24px;
+    color: #AFAFAF;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    top: 10px;
+    left: 10px
+}
+
+.clear-btn-el{
+	display: none;
+	margin: 10px;
+    margin-top: 12px;
+    font-size: 25px;
+    color: #AFAFAF;
+        line-height: 2;
+}
+
+.fl{
+	float: left;
+}
+
+.fr{
+	float: right;
+}
+
+.input-container{
+	    padding-top: 8px;
+    padding-left: 27px;
+    font-size: 29px;
+}
+
+.input-el{
+	height: 36px;
+    width: 100%;
+    outline: none;
+        border: 0px;
+            font-size: 16px;
+}
+
+.search-overlay{
+	position: absolute;
+    overflow: hidden;
+    top: 0px;
+    height: 0%;
+    width: 100%;
+    background: white;
+    z-index: -1;
+    -webkit-transition:opacity 0.1s linear;
+    opacity:0;
+    z-index: 3;
+}
+
+.search-results{
+    top: 70px;
+    position: relative;
+    padding: 10px;
+}
+
+
+
+.search-overlay.show{
+	height: 100%;
+    opacity:1;
+	 -webkit-transition:opacity 0.1s linear;
+}
+
+.bodyelWrap{
+	width: 300%;
+	 -webkit-transition:all 0.2s linear;
+}
+
+.bodyel{
+    width: 33.3%;
+    float: left;
+    padding: 8px;
+    box-sizing: border-box;
+    height: 85%;
+    overflow: scroll;
+    position: relative;
+}
+
+
+.thumb{
+	width: 50px;
+    height: 50px;
+    margin-left: 10px;
+    margin-top: 10px;
+    background-image: url("https://i.ytimg.com/vi/0KSOMA3QBU0/mqdefault.jpg");
+    background-size: cover;
+}
+
+.title-holder{
+	  margin-top: 15px;
+	    margin-left: 15px;
+    max-width: 65%;
+}
+
+.channel{
+	    color: #555;
+    text-shadow: none;
+    font-size: 1em;
+    /* text-shadow: 1px 1px 3px #5F5F5F; */
+    white-space: nowrap;
+    /* width: 12em; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.title{
+    font-size: .9em;
+    color: #ccc;
+    font-weight: 100;
+    margin-top: 3px;
+    white-space: nowrap;
+    width: 12em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.context-menu-button{
+	float: right;
+    color: #888;
+    font-size: 1.5em;
+    padding: 10px;
+    padding-top: 20px;
+    padding-right: 15px;
+    padding-left: 20px;
+
+}
+
+.context-menu{
+    position: absolute;
+    height: 7.8em;
+    width: 120px;
+    background: white;
+    z-index: 2;
+    left: 234px;
+    top: 145px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1), 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+    transform-origin: right top 0px;
+    opacity: 0;
+    transform:scale(0);
+}
+
+.context-menu.open{
+    opacity: 1;
+	 transform:scale(1);
+        padding: 0 2px;
+	-webkit-transition:transform 0.1s ease-out;
+    z-index: 10;
+}
+
+.menu-item{
+
+	    
+    padding: 9px;
+    font-weight: 100;
+    padding-left: 15px;
+    font-size: 1.2em;
+       color: #666;
+}
+
+.ripple{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform: translateY(1000px);
+    background: white;
+    transition: all .1s ease-in;
+    background: #EFEFEF;
+    top: 0;
+        overflow: scroll;
+}
+
+.ripple.open{
+   transform: translateY(0px);
+   transition: all .1s ease-in;
+}
+
+.player.top{
+    bottom: 65%;
+}
+
+.player{
+    position: absolute;
+    bottom: -65px;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.97);
+    width: 100%;
+    -webkit-transition:bottom .1s linear;
+    box-shadow: 0 -2px 5px 0 rgba(0, 0, 0, 0.1), 0 -2px 10px 0 rgba(0, 0, 0, 0.1);
+    z-index: 12;
+}
+
+audio{
+    position: absolute;
+    right: 4px;
+    width: 80%;
+    bottom: 10px;
+}
+
+.player-thumb{
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+    margin-top: 10px;
+    background-image: url("https://i.ytimg.com/vi/0KSOMA3QBU0/mqdefault.jpg");
+    background-size: cover;
+}
+
+.player-title{
+        margin-top: 11px;
+    margin-left: 11px;
+        font-size: 1em;
+        width: 60%;
+}
+
+.player-backdrop{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.play-pause{
+    float: right;
+    width: 55px;
+    height: 50px;
+    margin: 5px;
+    font-size: 1em;
+    text-align: center;
+    padding-top: 20px;
+    color: rgb(68, 68, 68);
+
+}
+
+.seek{
+    width: 100%;
+    height: 2px;
+    background: #7F9EFF;
+    margin-top: 10px;
+}
+
+.seek-button{
+    background: #0030A7;
+    width: 1.5em;
+    height: 1.5em;
+    top: -1em;
+    position: relative;
+    border-radius: 50%;
+    float: left;
+}
+
+
+.large{
+
+}
+
+.top-seek{
+    height: .6em;
+    background-color:#BFBCFF;
+}
+
+
+
+.top-seek:before {
+    content: " ";
+    height: 24px;
+    display: block;
+    position: absolute;
+    width: 100%;
+    top: -12px;
+    /* border: 1px solid; */
+}
+.top-seek .loaded{
+    width: 0%;
+    height: 100%;
+    background-color: #655EFF;
+}
+
+.seek-holder{
+    position: relative;
+    margin:0 auto;
+    width: 100%;  
+}

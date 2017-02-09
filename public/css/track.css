@@ -1,0 +1,236 @@
+
+	.fl{
+		float: left;
+	}
+
+
+	.title-block{
+		    margin-top: 45px;
+	}
+
+.maincard .thumb{
+    width: 80px;
+    height: 80px;
+    background-image: url("https://static.pexels.com/photos/30222/pexels-photo-30222.jpg");
+    background-size: cover;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+	.maincard{background: white;
+    overflow: hidden;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+        position: relative;
+    height: 200px;
+        border-radius: 0px;
+    box-shadow: 1px 1px 5px #B1B1B1;
+}
+
+.oh{
+	overflow: hidden;
+}
+
+.seek{
+
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+}
+
+.controls{
+	text-align: center;
+	font-size: 3em;
+	position: relative;
+	left:-10px;
+	    color: white;
+    margin: 7px;
+}
+.fa-play-circle,.fa-pause-circle{
+	font-size: 1.5em;
+}
+
+
+#channel{
+	    font-size: 1.5em;
+    color: white;
+    font-weight: bold;
+        text-shadow: 1px 1px 3px #5F5F5F;
+            white-space: nowrap;
+    /* width: 12em; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#title{
+	white-space: nowrap;
+    /* width: 12em; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+        font-size: 1em;
+    color: white;
+    font-weight: bold;
+        text-shadow: 1px 1px 3px #5F5F5F;
+}
+
+.backdrop{
+	width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-image: url(https://static.pexels.com/photos/30222/pexels-photo-30222.jpg);
+    background-size: cover;
+    /* background-size: 535px; */
+    -webkit-filter: blur(15px);
+    background-size: cover;
+    opacity: 0.9;
+    /*-webkit-transition:1s all linear;*/
+}
+
+.related .backdrop{
+	background:white;
+	-webkit-filter: blur(0px);
+}
+
+#frontdrop{
+	z-index: 1;
+    position: absolute;
+    width: 100%;
+    left: 0px;
+        height: 200px;
+        top: 0;
+}
+
+#hiddenPlayer{
+	/*display: none;*/
+	width: 100%;
+}
+
+#seeker{
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    background: red;
+    border-radius: 50%;
+    top: -3px;
+}
+
+.relatedcard{
+	height: 66px;
+    padding: 0px;
+    margin-bottom: .4em;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1), 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.relatedcard .title-holder{
+	margin-top: 15px;
+}
+
+.relatedcard  .thumb{
+    width: 50px;
+    height: 50px;
+
+}
+
+.related{
+	    list-style: none;
+	    padding: 5px 10px;
+}
+
+.related .title-block{
+	margin-top: 0px;
+}
+
+.related .backdrop{
+	opacity: 0.3;
+}
+#relatedTrackTitle{
+    margin-top: 20px;
+    font-size: 0.9em;
+    letter-spacing: 0.05em;
+    font-weight: bold;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    color: #868080;
+    margin-left: 10px;
+
+}
+
+.visualizer{
+	position: absolute;
+	left: 0;
+	bottom: 0;
+}
+
+.related{
+	position: relative;
+	overflow: hidden;
+}
+
+.related li{
+	position: relative;
+
+}
+
+.related #channel{
+	    color: #555;
+    text-shadow: none;
+    font-size: 1.2em;
+    font-weight: bold;
+    /* text-shadow: 1px 1px 3px #5F5F5F; */
+    white-space: nowrap;
+    /* width: 12em; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+.related #title{
+	text-shadow: none;
+    color: #777;
+    font-size: 0.85em;
+    font-weight: normal;
+}
+
+
+
+@-webkit-keyframes moving-gradient {
+    0% { background-position: left bottom; }
+    100% { background-position: right bottom; }
+}
+
+.bar {
+    width: 100%;
+   height: 8px;
+    
+    background: -webkit-linear-gradient( left, #31A2DA 15%, #42C0FF 50%, #44BEFF 85%, #31A2DA 100% ) repeat;
+    
+    -webkit-background-size: 50% 100%;
+    -webkit-animation-name: moving-gradient;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+}
+
+.half { width: 50p%; overflow-x: hidden; }
+.half.full {     
+	width: 100%;
+    position: absolute;
+    top:0;
+    opacity: 0.8; }
+.half .bar { width: 200%; }
+.half.full .bar { -webkit-animation-duration: 1s; }
+
+.header-icon-container{
+    margin-right: 15px;
+    margin-top: 5px;
+}
+
+
+.header-icon{
+    float: right;
+    margin: 6px;
+    font-size: 1.5em;
+    color: white;
+}

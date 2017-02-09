@@ -5,161 +5,23 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.nanoscroller/0.8.7/css/nanoscroller.min.css">
+<link rel="stylesheet" type="text/css" href="/index.css">
 
 <style type="text/css">
-*{
-	font-family: sans-serif;
-}
-.cont{
-  overflow:hidden;
-  margin-bottom: 10px;
-  width: 100%;
 
-}
-
-.fl{
-  float:left;
-}
-
-.details{
-  width:68%
-}
-
-.exists{
-	color: grey;
-	cursor: default !important;
-}
-
-.play{
-	cursor: pointer;
-	font-size: 2em;
-}
-
-.title{
-  color:#1D7AC6;
-  font-weight:bold;
-  font-size:1em;
-  white-space: nowrap; 
-    width: 15em; 
-    overflow: hidden;
-    text-overflow: ellipsis; 
-}
-
-.download{
-	float: right;
-	font-size: 2em;
-}
-
-.desc{
-     font-size: 13px;
-    color: grey;
-    height: 35px;
-    overflow: hidden;
-}
-
-.thumb{
-	width: 30%;
-}
-
-.thumb img{
-	width:100%;
-}
-
-
-.add{
-  cursor:pointer;
-}
-
-.nowPlaying{
-
-    width: 100%;
-    height: 120px;
-    position: fixed;
-    bottom: 0;
-
-}
-
-.nowPlaying .nowPlayingName{
-
-    display: block;
-    text-align: center;
-    font-size: 23px;
-
-}
-
-.nowPlaying{
-	width: 100%;
-	background: white;
-}
-
-.lib-list{
-	overflow-y:scroll;
-	height: 500px;
-	padding: 0px;
-}
-
-.controls{
-	float: left;
-	width: 20%;
-	height: 100%;
-	text-align: center;
-}
-
-.playPause{
-	font-size: 60px;
-    margin: 26px;
-}
-
-.prevButton,.nextButton{
-	vertical-align: top;
-	margin-top: 50px;
-}
-.wavePlayer{
-	float: left;
-	width: 70%
-}
-
-@media only screen and (max-device-width: 320px) {
-.prevButton,.nextButton{
-	display: none;
-}
-
-.playPause{
-font-size: 70px;
-    margin: 7px;
-    margin-top: 32px;
-}
-
-.mylibContainer{
-	    position: relative;
-}
-
-}
-
-.mylibContainer{
-	    position: absolute;
-    right: 0;
-    top: 0;
-}
-
-@media only screen and (max-device-width: 480px) {
-.prevButton,.nextButton{
-	display: none;
-}
-
-.playPause{
-font-size: 70px;
-    margin: 7px;
-    margin-top: 32px;
-}
-.mylibContainer{
-	    position: relative;
-}
-}
 </style>
 <body>
+<div class="header"> 
+	<span class="commonHeader" style="display:none">
+		<i class="fa fa-bars"></i>
+		YT Music
+		<i class="fa fa-search fr"></i>
+	</span>
+	<span id="searchHeader">
 
+	</span>
+</div>
+<div class="content">
 <div id="searchBox">  </div>
 <div id="results">
 </div>
@@ -174,6 +36,7 @@ font-size: 70px;
 </div>
 </div>
 
+</div>
 
 <div id="player"></div>
 </body>
@@ -186,16 +49,23 @@ font-size: 70px;
 <script src="https://fb.me/react-dom-0.14.6.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
 
-<script type="text/javascript" src="http://wavesurfer-js.org/dist/wavesurfer.min.js"></script>
+<script type="text/javascript">
+var ShareSong = Backbone.Model.extend({
+	urlRoot:"/api/share"
+})
 
-
-
+</script>
 <script type="text/babel">
 
 
 
 var UserSong = Backbone.Model.extend({
 	urlRoot:"/api/collection"
+})
+
+
+var ShareSong = Backbone.Model.extend({
+	urlRoot:"/api/share"
 })
 
 var UserSongCollection = Backbone.Collection.extend({
@@ -244,45 +114,6 @@ function searchStr(q,cb){
 		}
 	})
 }
-
-
-
-
-
-
-
-/*Backbone code starts*/
-
-
-
-var SearchBar = React.createClass({
-	getInitialState:function(){
-		return {result:new SearchResultCollection() };
-	},
-	componentDidMount:function(){
-
-		this.refs.searchButton.addEventListener("click",function(){
-			var searchQ = this.refs.input.value;
-			searchStr(searchQ,function(d){
-				var temp = this.state.result
-				temp.set(d);
-				this.setState({result:temp});
-				
-				
-			}.bind(this))
-			
-		}.bind(this))
-	},
-	render:function(){
-		return <div>
-					<input ref="input"></input>
-					<button ref="searchButton">Search</button>
-					<SearchResult results={this.state.result}/>
-				</div>
-	}
-
-});
-
 
 
 
@@ -351,7 +182,7 @@ var SearchResultItem = React.createClass({
   	var collectionText = this.state.inLib? 'In your collection':'[+] Add to my collection';
   	var exists = this.state.inLib?"add exists":"add";
     return <div className="cont">
-			  <div className="fl">
+			  <div className="fl thumb">
 			    <img src={this.props.model.get("snippet").thumbnails.default.url} alt=""/>
 			  </div>
 			  <span className="fl details">
@@ -365,6 +196,54 @@ var SearchResultItem = React.createClass({
   }
 });
 
+
+var SearchHeader = React.createClass({
+	getInitialState:function(){
+		return {showSearch:false,result:new SearchResultCollection()};
+	},
+	componentDidMount:function(){
+		this.refs.inp.addEventListener("keyup",function(e){
+			if(e.keyCode == 13){
+
+			
+				var searchQ = this.refs.inp.value;
+				searchStr(searchQ,function(d){
+					console.log(d)
+					var temp = this.state.result
+					temp.set(d);
+					this.setState({result:temp});
+					this.setState({showSearch:true});
+
+					$(window).trigger("showSearch",true)
+				
+				
+				}.bind(this))
+		
+
+			}
+		}.bind(this))
+	},
+	clearInput:function(){
+		this.refs.inp.value = "";
+	},
+	hideSearch:function(){
+		this.setState({showSearch:false});
+		$(window).trigger("showSearch",false);
+	},
+	render:function(){
+		return <div>
+				<span className="searchHeaderControls">
+					<i onClick={this.hideSearch}  className="fa fa-angle-left"></i>
+					<input ref="inp" placeholder="Search"/>
+					<i onClick={this.clearInput} className="fa fa-times fr cross"></i>
+
+				</span>
+				<div className={"searchReusltContainer "+(this.state.showSearch?"":"hide")}>
+					<SearchResult results={this.state.result}/>
+				</div>
+				</div>
+	}
+})
 
 
 
@@ -381,7 +260,7 @@ var userSongCollection = new UserSongCollection();
 
 var MyLibrary = React.createClass({
 	getInitialState:function(){
-		return {"collection":{"models":[]}};
+		return {hidden:false,"collection":{"models":[]}};
 	},
 	componentDidMount :function(){
 
@@ -399,18 +278,35 @@ var MyLibrary = React.createClass({
 			_this.setState({collection:userSongCollection});
 		})
 
-		$(window).on("endPlay",function(e,d){
-			
-		});
+		$(window).on("showSearch",function(e,d){
+			if(d == true){
+				this.hide();
+
+			}else{
+				this.show();
+
+			}
+		}.bind(this));
 
 
 	},
+	show:function(){
+		this.setState({hidden:false});
+	},
+	hide:function(){
+		this.setState({hidden:true});
+	},
+	handleClick:function(model){
+		$(window).trigger("play",{currentTrack:model,playlist:this.state.collection});
+	},
 	render:function(){
-		return  <div>
-				<span>My Collection [{this.state.collection.models.length}]</span>
+		var hidden = this.state.hidden?"hide":"";
+		var _this = this;
+		return  <div className ={hidden} >
+				<span className="myCollectionHeader">My Collection [{this.state.collection.models.length}]</span>
 				<ul className="lib-list">
 					{this.state.collection.models.map(function(result) {
-           				return <LibraryItem key={result.get("id")} model={result} />;
+           				return <LibraryItem key={result.get("id")} model={result} playFn={_this.handleClick} />;
         			})}
       			</ul>
       			</div>
@@ -427,7 +323,11 @@ var LibraryItem = React.createClass({
   			this.props.model.destroy();
   },
   playThis:function(){
-  	$(window).trigger("play",this.props.model)
+  	this.props.playFn(this.props.model);
+  	//$(window).trigger("play",this.props.model)
+  },
+  download:function(){
+  		ga('send', 'event', 'Song', 'download', this.props.model.get("name") );
   },
   render: function() {
   	var collectionText = '[-] Remove from collection';
@@ -440,8 +340,16 @@ var LibraryItem = React.createClass({
 			    <div className="title">{this.props.model.get("name")}</div>
 		
 			    <i className="fa fa-play-circle play" onClick={this.playThis}></i>
-			    <a href={this.props.model.get("uri")} download={this.props.model.get("name")}><i className="fa fa-download download"></i></a>
-			    <div className={exists} onClick={this.removeFromMyCollection} >{collectionText}</div>
+			    <a href={"whatsapp://send?text=Checkout *"+this.props.model.get("name") +"* on bamusic https://bamusic.in/track/"+this.props.model.get("id")} >
+			    		<i className="fa fa-whatsapp" aria-hidden="true"></i> 
+			    </a>
+			    
+			    <a href={this.props.model.get("uri")+"?filename="+this.props.model.get("name")} onClick={this.download} download>
+			    		<i className="fa fa-download download"></i>
+			    </a>
+
+			    <i className="fa fa-trash delete" onClick={this.removeFromMyCollection}></i>
+			    
 			  </span>
 			</div>
 
@@ -466,15 +374,42 @@ var Player = React.createClass({
 	componentDidMount:function(){
 		
 		var _this = this;
-		$(window).on("play",function(e,d){
+		$(window).on("play",function(e,obj){
+			_this.setState({playlist:obj.playlist})
+			_this.setState({nowPlaying:obj.currentTrack})
+
+
+			 var d = obj.currentTrack;
+			 ga('send', 'event', 'Song', 'play', d.get("name") );
+
+
 			_this.setState({name:d.get("name")})
 			_this.setState({src:d.get("uri")})
 			_this.setState({origsrc:d.get("uri")})
-			//_this.play();
-			_this.wavesurfer.load(d.get("uri"));
+			_this.refs.aud.src = d.get("uri");
+			_this.play();
 		});
 
-		this.wavesurfer = WaveSurfer.create({
+		$(this.refs.aud).on('ended', function(){
+
+			var pos = 0;
+			for (var i = 0; i < _this.state.playlist.length; i++) {
+				if(_this.state.playlist.models[i].get("name") == _this.state.name){
+					pos = i;
+					break;
+				}
+			};
+
+		
+
+			if(pos < _this.state.playlist.models.length-1){
+				$(window).trigger("play",{
+					currentTrack:_this.state.playlist.models[pos+1],
+					playlist:_this.state.playlist })
+			}
+		});
+
+/*		this.wavesurfer = WaveSurfer.create({
     		container: '.wavePlayer',
     		waveColor: 'violet',
     		progressColor: 'purple',
@@ -488,7 +423,7 @@ var Player = React.createClass({
 
 		this.wavesurfer.on('finish', function (e) {
     		_this.setState({playing:false});
-		});
+		});*/
 
 
 
@@ -504,6 +439,9 @@ var Player = React.createClass({
 
 
 	},
+	ended:function(){
+		console.log(this.state)
+	},
 	render:function(){
 		var buttonToShow = this.state.playing?"pause":"play";
 		var buttonClassName = "playPause fa fa-"+buttonToShow+"-circle";
@@ -513,7 +451,11 @@ var Player = React.createClass({
 						<i className={buttonClassName} onClick={this.playPauseClick}></i>
 						<i className="nextButton fa fa-fast-forward"></i>
 					</div>
-					<div className="wavePlayer"></div>
+					<div className="wavePlayer">
+							<audio ref="aud" onEnded={this.ended} controls source src="" type="audio/mpeg">
+							Your browser does not support the audio element.
+							</audio>
+					</div>
 				</div>
 	}
 })
@@ -522,9 +464,7 @@ var Player = React.createClass({
 
 $(document).ready(function(){
 
-					ReactDOM.render(
-  					<SearchBar />,document.getElementById('searchBox')
-					);
+
 
 
 					ReactDOM.render(
@@ -535,8 +475,28 @@ $(document).ready(function(){
   					<Player />,document.getElementById('player')
 					);
 
+					ReactDOM.render(
+  					<SearchHeader />,document.getElementById('searchHeader')
+					);
+
+					
+
 					
 })
+
+
+
+</script>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-73035652-1', 'auto');
+  ga('send', 'pageview');
 
 </script>
 </html>
