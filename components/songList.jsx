@@ -1,5 +1,6 @@
 import React from 'react';
 import Song from './song.jsx'
+import Infinite from 'react-infinite';
 class SongList extends React.Component {
 	constructor(props){
 		super(props);
@@ -21,7 +22,11 @@ class SongList extends React.Component {
 		      <span className="icon-headphones"></span> 
 		      My Collection
 		  </div>
-		  <ul className="songList">{songs}</ul>
+		  <ul className="songList">
+		  	<Infinite containerHeight={500} elementHeight={50}>
+		  		{songs}
+		  	</Infinite>
+		  </ul>
 		</div>);
 	}
 }

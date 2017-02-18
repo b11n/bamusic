@@ -136,7 +136,7 @@ input{
 }
 
 .card{
-    height: 3.3em;
+    height: 50px;
     background: white;
     padding: .8em 0em .8em .8em;
     margin-bottom: 6px;

@@ -21,6 +21,7 @@
     "passport-google-oauth": "^0.2.0",
     "react": "^15.4.0",
     "react-dom": "^15.4.0",
+    "react-infinite": "^0.10.0",
     "redux": "^3.6.0",
     "request": "^2.67.0",
     "reqwest": "^2.0.5"
