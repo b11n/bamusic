@@ -23,9 +23,9 @@ class SongList extends React.Component {
 		      My Collection
 		  </div>
 		  <ul className="songList">
-		  	<Infinite containerHeight={500} elementHeight={50}>
+		  	
 		  		{songs}
-		  	</Infinite>
+		  	
 		  </ul>
 		</div>);
 	}
