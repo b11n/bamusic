@@ -3,3 +3,4 @@ downloads/
 config.js
 stats.json
 public/scripts/
+.DS_Store

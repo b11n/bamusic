@@ -73,6 +73,13 @@ app.get("/",function(req,res){
 	}
 })
 
+
+app.get("/ba-sw.js",function(req,res){
+  res.sendfile("./public/ba-sw.js")
+  
+});
+
+
 app.get("/track/:id",function(req,res){
 
        var id = req.params.id;
