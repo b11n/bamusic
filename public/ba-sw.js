@@ -1,4 +1,5 @@
 importScripts('/public/sw-toolbox/sw-toolbox.js');
+importScripts('/public/rangedResponseHelper.js');
 var CACHE_VERSION = 2;
 var CURRENT_CACHES = {
   prefetch: 'prefetch-cache-v' + CACHE_VERSION
@@ -43,13 +44,7 @@ toolbox.router.get('/(.*)', toolbox.cacheFirst, {
 });
 
 
-toolbox.router.get('/download/(.*)', toolbox.cacheFirst, {
-    cache: {
-        name: 'baMp3cache',
-        maxEntries: 50,
-        maxAgeSeconds: 60000
-    }
-});
+
 
 self.addEventListener("install", function(e) {
     e.waitUntil(self.skipWaiting());
@@ -60,39 +55,39 @@ self.addEventListener("activate", function(e) {
 
 
 
-// self.addEventListener('fetch', function(event) {
-//   console.log('Handling fetch event for', event.request.url);
 
-//   if (event.request.headers.get('range')) {
+self.onfetch = evt => {
+  const FETCH_TIMEOUT = 10000;
+  const request = evt.request;
 
-//     var pos =
-//     Number(/^bytes\=(\d+)\-$/g.exec(event.request.headers.get('range'))[1]);
-//     console.log('Range request for', event.request.url,
-//       ', starting position:', pos);
-//     event.respondWith(
-//       caches.open(CURRENT_CACHES.prefetch)
-//       .then(function(cache) {
-//         return cache.match(event.request.url);
-//       }).then(function(res) {
-//         if (!res) {
-//           return fetch(event.request)
-//           .then(res => {
-//             return res.arrayBuffer();
-//           });
-//         }
-//         return res.arrayBuffer();
-//       }).then(function(ab) {
-//         return new Response(
-//           ab.slice(pos),
-//           {
-//             status: 206,
-//             statusText: 'Partial Content',
-//             headers: [
-//               // ['Content-Type', 'video/webm'],
-//               ['Content-Range', 'bytes ' + pos + '-' +
-//                 (ab.byteLength - 1) + '/' + ab.byteLength]]
-//           });
-//       }));
-//   } else {
-//   }
-// });
+  evt.respondWith(
+    RangedResponse.canHandle(request).then(canHandleRequest => {
+      if (canHandleRequest) {
+        return RangedResponse.create(request);
+      }
+
+      // Not a range request that can be handled, so try a normal cache lookup
+      // followed by falling back to fetching.
+      return caches.match(request)
+        .then(response => {
+          if (response) {
+            return response;
+          }
+
+          return Promise.race([
+            fetch(evt.request),
+            new Promise(resolve => {
+              setTimeout(resolve, FETCH_TIMEOUT);
+            })
+          ]).then(response => {
+            if (response) {
+              return response;
+            }
+
+            return caches.match('/404/');
+          });
+        });
+    })
+  );
+};
+

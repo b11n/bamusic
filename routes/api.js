@@ -254,7 +254,7 @@ function apiRoutes() {
                     temp.id = data[i].songid;
                     temp.name = data[i].name;
                     temp.thumb = data[i].thumb;
-                    temp.uri = "https://" + req.get('host') + "/download/" + data[i].songid + ".mp3";
+                    temp.uri = "//" + req.get('host') + "/download/" + data[i].songid + ".mp3";
                     result.push(temp)
                 };
                 res.send(result);
