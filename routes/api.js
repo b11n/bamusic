@@ -254,7 +254,12 @@ function apiRoutes() {
                     temp.id = data[i].songid;
                     temp.name = data[i].name;
                     temp.thumb = data[i].thumb;
-                    temp.uri = "//" + req.get('host') + "/download/" + data[i].songid + ".mp3";
+                    if(req.get("host").indexOf("bamusic") != -1){
+                         temp.uri = "https://www.bamusic.in/download/" + data[i].songid + ".mp3";
+                    }else{
+                         temp.uri = "//" + req.get('host') + "/download/" + data[i].songid + ".mp3";
+                    }
+                   
                     result.push(temp)
                 };
                 res.send(result);
