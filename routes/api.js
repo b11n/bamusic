@@ -1,7 +1,7 @@
 var youtubedl = require("../ydl");
 var db = require("../db");
  var request = require("request");
-const config = require("../config.js")
+var config = require("../config.js")
 module.exports = apiRoutes;
 
 var express = require('express');
@@ -67,7 +67,7 @@ function apiRoutes() {
     router.get("/video/:id", function(req, res) {
         var id = req.params.id;
 
-        var url = "https://www.googleapis.com/youtube/v3/videos?key="+config.youtubekey+"&part=snippet&type=video&id=" + id;
+        var url = "https://www.googleapis.com/youtube/v3/videos?key="+config.youtubeKey+"&part=snippet&type=video&id=" + id;
         request.get(url, function(err, resp, body) {
             res.send(body);
         })
@@ -81,7 +81,7 @@ function apiRoutes() {
     var request = require("request");
 
     function searchAPI(q, cb) {
-        var url = "https://www.googleapis.com/youtube/v3/search?key="+config.youtubekey+"&part=snippet&type=video&q=" + q;
+        var url = "https://www.googleapis.com/youtube/v3/search?key="+config.youtubeKey+"&part=snippet&type=video&q=" + q;
         request.get(url, function(err, resp, body) {
             cb(body);
         })
