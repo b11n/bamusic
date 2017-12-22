@@ -84,10 +84,16 @@ app.get("/track/:id",function(req,res){
 
        var id = req.params.id;
 
-        var url = "https://www.googleapis.com/youtube/v3/videos?key=AIzaSyC5l5beicijhdd8jWcorEqmXbZjMFCDrTc&part=snippet&type=video&id=" + id;
+        var url = "https://www.googleapis.com/youtube/v3/videos?key="+config.youtubeKey+"&part=snippet&type=video&id=" + id;
         request.get(url, function(err, resp, body) {
+
+          try{
          
             res.render("track" ,{details:JSON.parse(body)});
+
+          }catch(e){
+            console.log(e)
+          }
         })
   
 });
@@ -96,7 +102,7 @@ app.get("/related/:id",function(req,res){
 
        var id = req.params.id;
 
-        var url = "https://www.googleapis.com/youtube/v3/search?key=AIzaSyC5l5beicijhdd8jWcorEqmXbZjMFCDrTc&part=snippet&maxResults=10&type=video&relatedToVideoId=" + id;
+        var url = "https://www.googleapis.com/youtube/v3/search?key="+config.youtubeKey+"&part=snippet&maxResults=10&type=video&relatedToVideoId=" + id;
         request.get(url, function(err, resp, body) {
          
             res.send(body)

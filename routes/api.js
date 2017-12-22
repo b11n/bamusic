@@ -1,7 +1,7 @@
 var youtubedl = require("../ydl");
 var db = require("../db");
  var request = require("request");
-
+const config = require("../config.js")
 module.exports = apiRoutes;
 
 var express = require('express');
@@ -64,32 +64,10 @@ function apiRoutes() {
     })
 
 
-    router.post("/triggerPush",function(req,res){
-/*        db.getAllGcmIds(function(err,data){
-            request
-        })*/
-
-
-        request.post({
-            url:"https://android.googleapis.com/gcm/send",
-            json:true,
-            body:{registration_ids:["fgDQ2JwkcUk:APA91bFFe7PfzLGm5dUg9IjfW5bv5aRq1PIUZHXhqkfsKxj6qIqt_fGLCgeTKx_4Y7QBLvAcKxEHLzK4F7wJvYpRmF2O-mAGnr9IpBuVL0BUNAnOXfiFbXF8wxs52gDorr_ggQu-Od89"]},
-            headers:{
-                "Authorization": "key=AIzaSyD3nQSAAJ9Mh3aTwgThho9jZuqWTi_smZU",
-                "Content-Type": "application/json" 
-            }
-        },function(a,b,c){
-            console.log(a)
-            res.send(c);
-        })
-
-    })
-
-
     router.get("/video/:id", function(req, res) {
         var id = req.params.id;
 
-        var url = "https://www.googleapis.com/youtube/v3/videos?key=AIzaSyC5l5beicijhdd8jWcorEqmXbZjMFCDrTc&part=snippet&type=video&id=" + id;
+        var url = "https://www.googleapis.com/youtube/v3/videos?key="+config.youtubekey+"&part=snippet&type=video&id=" + id;
         request.get(url, function(err, resp, body) {
             res.send(body);
         })
@@ -103,7 +81,7 @@ function apiRoutes() {
     var request = require("request");
 
     function searchAPI(q, cb) {
-        var url = "https://www.googleapis.com/youtube/v3/search?key=AIzaSyC5l5beicijhdd8jWcorEqmXbZjMFCDrTc&part=snippet&type=video&q=" + q;
+        var url = "https://www.googleapis.com/youtube/v3/search?key="+config.youtubekey+"&part=snippet&type=video&q=" + q;
         request.get(url, function(err, resp, body) {
             cb(body);
         })
